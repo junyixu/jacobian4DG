@@ -26,5 +26,5 @@ f = bar!
 
 @btime ForwardDiff.jacobian($f, $du_ode, $u0_ode)
 @btime jacobian($f, $du_ode, AutoForwardDiff(), $u0_ode)
-@btime jacobian($f, $du_ode,  AutoEnzyme(;mode=Enzyme.Forward), $u0_ode)
-@btime my_jacobian_forward!($f, $du_ode, $u0_ode)
+@btime jacobian($f, $du_ode,  AutoEnzyme(;mode=Enzyme.Forward), $u0_ode) # 3.213 ms  (45680 allocations: 2.94 MiB)
+@btime my_jacobian_forward!($f, $du_ode, $u0_ode) # 1.246 ms (19911 allocations: 1.63 MiB)

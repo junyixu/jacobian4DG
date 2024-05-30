@@ -1,7 +1,9 @@
+MD = M \ transpose(D)
 function rhs!(du, u)
     # Reset du and flux matrix
     du .= zero(eltype(du))
     flux_numerical = copy(du)
+    n_elements = size(du, 2)
 
     # Calculate interface and boundary fluxes, $u^* = (u^*|_{-1}, 0, ..., 0, u^*|^1)^T$
     # Since we use the flux Lax-Friedrichs from Trixi.jl, we have to pass some extra arguments.
@@ -30,7 +32,8 @@ function rhs!(du, u)
     # Calculate volume integral, $+ M^{-1} * D^T * M * u$
     for element in 1:n_elements
         flux = u[:, element]
-        du[:, element] += (M \ transpose(D)) * M * flux
+        # du[:, element] += (M \ transpose(D)) * M * flux
+        du[:, element] += MD * M * flux
     end
 
     # Apply Jacobian from mapping to reference element
