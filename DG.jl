@@ -8,9 +8,8 @@ coordinates_max = 1.0  # maximum coordinate
 
 initial_condition_sine_wave(x) = 1.0 + 0.5 * sin(π*x)
 
+n_elements::Int = 16 # number of elements
 
-
-n_elements = 16 # number of elements
 dx = (coordinates_max - coordinates_min) / n_elements # length of one element
 
 polydeg = 3 #= polynomial degree = N =#
