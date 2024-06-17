@@ -1270,9 +1270,9 @@ version = "0.1.2"
 
 [[deps.Trixi]]
 deps = ["CodeTracking", "ConstructionBase", "DataStructures", "DelimitedFiles", "DiffEqBase", "DiffEqCallbacks", "Downloads", "EllipsisNotation", "FillArrays", "ForwardDiff", "HDF5", "IfElse", "LinearAlgebra", "LinearMaps", "LoopVectorization", "MPI", "MuladdMacro", "Octavian", "OffsetArrays", "P4est", "Polyester", "PrecompileTools", "Preferences", "Printf", "RecipesBase", "Reexport", "Requires", "SciMLBase", "SimpleUnPack", "SparseArrays", "StartUpDG", "Static", "StaticArrayInterface", "StaticArrays", "StrideArrays", "StructArrays", "SummationByPartsOperators", "T8code", "TimerOutputs", "Triangulate", "TriplotBase", "TriplotRecipes", "TrixiBase", "UUIDs"]
-path = "dev/Trixi"
+git-tree-sha1 = "297baaa9abf39470f59c10659bc273218b05ce0d"
 uuid = "a7f1ee26-1774-49b1-8366-f1abc58fbfcb"
-version = "0.7.16-pre"
+version = "0.7.15"
 
     [deps.Trixi.extensions]
     TrixiConvexECOSExt = ["Convex", "ECOS"]
