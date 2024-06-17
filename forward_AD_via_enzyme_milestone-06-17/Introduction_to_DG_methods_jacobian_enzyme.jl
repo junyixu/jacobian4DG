@@ -3,7 +3,7 @@
 # vim:fenc=utf-8
 #=
     This exmaple is taken from 
-    https://trixi-framework.github.io/Trixi.jl/dev/tutorials/differentiable_programming/#Computing-the-Jacobian
+    https://trixi-framework.github.io/Trixi.jl/dev/tutorials/scalar_linear_advection_1d/#Alternative-Implementation-based-on-Trixi.jl-2
 
     Two important APIs from Enzyme.jl:
     1. Enzyme.onehot: create a one-hot tuple
