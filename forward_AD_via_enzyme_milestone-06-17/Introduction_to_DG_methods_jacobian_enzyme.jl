@@ -2,7 +2,15 @@
 # -*- coding: utf-8 -*-
 # vim:fenc=utf-8
 #=
+    This exmaple is taken from 
     https://trixi-framework.github.io/Trixi.jl/dev/tutorials/differentiable_programming/#Computing-the-Jacobian
+
+    Two important APIs from Enzyme.jl:
+    1. Enzyme.onehot: create a one-hot tuple
+    2. Enyzme.make_zero takes a data structure and constructs a deepcopy of the data structure with all of the floats set to zero and non-differentiable types like Symbols set to their primal value.
+    If Enzyme gets into such a "Mismatched activity" situation where it needs to return a differentiable data structure from a constant variable, it could try to resolve this situation by constructing a new shadow data structure, such as with Enzyme.make_zero.
+    However, this still can lead to incorrect results
+
 =#
 
 using Trixi
@@ -38,7 +46,7 @@ function jacobian_ad_forward_enzyme(semi)
     dx = Enzyme.onehot(u_ode)
     tuple_semi=Tuple(Enzyme.make_zero(semi) for i=1:length(u_ode))
     Enzyme.autodiff(Enzyme.Forward, (du_ode, u_ode, semi)->Trixi.rhs!(du_ode, u_ode, semi, t0), Enzyme.BatchDuplicated(du_ode, dy), Enzyme.BatchDuplicated(u_ode, dx), BatchDuplicated(semi, tuple_semi))
-    return stack(dy)
+    return stack(dy) # a tuple to a matrix
 end
 
 J2 = jacobian_ad_forward_enzyme(semi)
