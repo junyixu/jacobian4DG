@@ -26,20 +26,16 @@ function rhs!(du, u)
     flux_numerical[1, 1] = surface_flux(u[end, end], u[1, 1], 1, equations)
     flux_numerical[end, end] = flux_numerical[1, 1]
 
-    # # Calculate surface integrals, $- M^{-1} * B * u^*$
-    # # println("size of du: $(size(du))")
-    # # println("du[2, 2]: $(du[2,2])")
-    # # println("du[2, 2]: $(du[2,2])")
-    # for element in 1:n_elements
-    #     @show size(du[:, element])
-    #     @show size(flux_numerical[:, element])
-    #     @show size(MB)
-    #     MB * flux_numerical[:, element]
-    #     @show tmp
-    #     tmp_vec = du[:, element] .- MB * flux_numerical[:, element]
-    #     du[1, element] = tmp_vec[1] 
-    #     du[end, element] = tmp_vec[end] 
-    # end
+    # Calculate surface integrals, $- M^{-1} * B * u^*$
+    # println("size of du: $(size(du))")
+    # println("du[2, 2]: $(du[2,2])")
+    # println("du[2, 2]: $(du[2,2])")
+    for element in 1:n_elements
+        MB * flux_numerical[:, element]
+        tmp_vec = du[:, element] .- MB * flux_numerical[:, element]
+        du[1, element] = tmp_vec[1] 
+        du[end, element] = tmp_vec[end] 
+    end
 
     # Calculate volume integral, $+ M^{-1} * D^T * M * u$
     for element in 1:n_elements

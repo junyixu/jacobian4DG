@@ -25,6 +25,8 @@ tf = fieldnames ∘ typeof
 semi.cache |> typeof |> fieldnames
 semi.cache[:elements]
 semi.cache[:elements] |> tf
+semi.cache[:elements].node_coordinates
+semi.cache[:elements].surface_flux_values
 
 semi.cache[:elements].node_coordinates
 

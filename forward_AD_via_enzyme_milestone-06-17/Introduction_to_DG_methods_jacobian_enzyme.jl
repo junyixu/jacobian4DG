@@ -35,10 +35,11 @@ mesh = TreeMesh(coordinates_min, coordinates_max,
 initial_condition_sine_wave(x, t, equations) = SVector(1.0 + 0.5 * sin(pi * sum(x - equations.advection_velocity * t)))
 
 semi = SemidiscretizationHyperbolic(mesh, equations, initial_condition_sine_wave, solver)
+
 # %%
 J1 = jacobian_ad_forward(semi);
 
-function jacobian_ad_forward_enzyme(semi)
+function jacobian_ad_forward_enzyme(semi::Trixi.SemidiscretizationHyperbolic)
     t0 = zero(real(semi))
     u_ode = compute_coefficients(t0, semi)
     du_ode = similar(u_ode)
@@ -52,3 +53,53 @@ end
 J2 = jacobian_ad_forward_enzyme(semi)
 
 J1 == J2 # ture
+
+# %%
+
+function my_rhs!(du_ode::AbstractVector, u_ode::AbstractVector, t, mesh, equations, initial_condition, boundary_conditions, source_terms, solver, cache)
+    u = Trixi.wrap_array(u_ode, mesh, equations, solver, cache)
+    du = Trixi.wrap_array(du_ode, mesh, equations, solver, cache)
+    Trixi.rhs!(du, u, t, mesh, equations, initial_condition, boundary_conditions, source_terms, solver, cache)
+    return nothing
+end
+
+
+function jacobian_ad_forward_enzyme_cache(semi::Trixi.SemidiscretizationHyperbolic)
+    t0 = zero(real(semi))
+    u_ode = compute_coefficients(t0, semi)
+    du_ode = similar(u_ode)
+
+    Trixi.@unpack mesh, equations, initial_condition, boundary_conditions, source_terms, solver, cache = semi
+
+    dy = Tuple(zeros(size(du_ode)) for _ in 1:length(u_ode))
+    dx = Enzyme.onehot(u_ode)
+    tuple_cache=Tuple(Enzyme.make_zero(cache) for i=1:length(u_ode))
+
+    Enzyme.autodiff(Enzyme.Forward, (du_ode, u_ode, cache,)->my_rhs!(du_ode, u_ode, t0, mesh, equations, initial_condition, boundary_conditions, source_terms, solver, cache), Enzyme.BatchDuplicated(du_ode, dy), Enzyme.BatchDuplicated(u_ode, dx), Enzyme.BatchDuplicated(cache, tuple_cache))
+      return stack(dy)
+end
+
+function jacobian_ad_forward_enzyme_solver_cache(semi::Trixi.SemidiscretizationHyperbolic)
+    t0 = zero(real(semi))
+    u_ode = compute_coefficients(t0, semi)
+    du_ode = similar(u_ode)
+
+    Trixi.@unpack mesh, equations, initial_condition, boundary_conditions, source_terms, solver, cache = semi
+
+    dy = Tuple(zeros(size(du_ode)) for _ in 1:length(u_ode))
+    dx = Enzyme.onehot(u_ode)
+    tuple_cache=Tuple(Enzyme.make_zero(cache) for i=1:length(u_ode))
+    tuple_solver=Tuple(Enzyme.make_zero(solver) for i=1:length(u_ode))
+
+    Enzyme.autodiff(Enzyme.Forward, (du_ode, u_ode, cache, solver)->my_rhs!(du_ode, u_ode, t0, mesh, equations, initial_condition, boundary_conditions, source_terms, solver, cache), Enzyme.BatchDuplicated(du_ode, dy), Enzyme.BatchDuplicated(u_ode, dx), Enzyme.BatchDuplicated(cache, tuple_cache), Enzyme.BatchDuplicated(solver, tuple_solver))
+      return stack(dy)
+end
+
+# %%
+
+jacobian_ad_forward_enzyme_cache(semi) # fail
+
+@time jacobian_ad_forward(semi);
+@time jacobian_ad_forward_enzyme(semi);
+@time jacobian_ad_forward_enzyme_solver_cache(semi); # success
+
