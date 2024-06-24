@@ -42,8 +42,7 @@ function jacobian_ad_forward_enzyme_cache_upwind(x::AbstractVector)
 
     dy = Tuple(zeros(size(du_ode)) for _ in 1:length(u_ode))
     dx = Enzyme.onehot(u_ode)
-    cache_shadow = Cache(1.0, zeros(length(x)))
-    cache_shadows =Tuple(cache_shadow for i=1:length(x))
+    cache_shadows =Tuple(Cache(1.0, zeros(length(x))) for i=1:length(x))
 
     # cache is passed to upwind!
     Enzyme.autodiff(Enzyme.Forward, upwind!, Enzyme.BatchDuplicated(du_ode, dy), Enzyme.BatchDuplicated(u_ode, dx), Enzyme.BatchDuplicated(cache, cache_shadows))
