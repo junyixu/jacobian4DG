@@ -39,7 +39,6 @@ function my_rhs!(du_ode::AbstractVector, u_ode::AbstractVector, t, mesh, equatio
     return nothing
 end
 
-function foo(semi::Trixi.SemidiscretizationHyperbolic)
     t0 = zero(real(semi))
     u_ode = compute_coefficients(t0, semi)
     du_ode = similar(u_ode)
@@ -57,7 +56,8 @@ function foo(semi::Trixi.SemidiscretizationHyperbolic)
         dx[i] = 0.0
     end
 
-    return dys
-end
+    # return dys
+# end
 
-foo(semi)
+# foo(semi)
+dys
