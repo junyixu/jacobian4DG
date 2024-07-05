@@ -29,35 +29,13 @@ initial_condition_sine_wave(x, t, equations) = SVector(1.0 + 0.5 * sin(pi * sum(
 semi = SemidiscretizationHyperbolic(mesh, equations, initial_condition_sine_wave, solver)
 
 # %%
-J = jacobian_ad_forward(semi);
+@time J1 = jacobian_ad_forward(semi);
 
 # %%
-function my_rhs!(du_ode::AbstractVector, u_ode::AbstractVector, t, mesh, equations, initial_condition, boundary_conditions, source_terms, dg, cache)
-    u = Trixi.wrap_array(u_ode, mesh, equations, solver, cache)
-    du = Trixi.wrap_array(du_ode, mesh, equations, solver, cache)
-    Trixi.rhs!(du, u, 0.0, mesh, equations, initial_condition, boundary_conditions, source_terms, solver, cache)
-    return nothing
-end
 
-    t0 = zero(real(semi))
-    u_ode = compute_coefficients(t0, semi)
-    du_ode = similar(u_ode)
+include("ad_functions.jl")
 
-    Trixi.@unpack mesh, equations, initial_condition, boundary_conditions, source_terms, solver, cache = semi
-    dys = zeros(length(du_ode), length(du_ode))
-    dy = zero(du_ode)
-    dx = zero(u_ode)
-    cache_zero=Enzyme.make_zero(cache)
+# %%
 
-    for i in 1:length(du_ode)
-        dx[i] = 1.0
-        Enzyme.autodiff(Forward, (du, u, cache)->my_rhs!(du, u, 0.0, mesh, equations, initial_condition, boundary_conditions, source_terms, solver, cache), Duplicated(du_ode, dy), Duplicated(u_ode, dx), Duplicated(cache, cache_zero)) # ok!
-        dys[:, i] = dy
-        dx[i] = 0.0
-    end
-
-    # return dys
-# end
-
-# foo(semi)
-dys
+@time J2 = gradients_ad_forward_enzyme_cache(semi);
+J1 == J2
