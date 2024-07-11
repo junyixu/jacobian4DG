@@ -8,7 +8,6 @@
 using Trixi
 using Enzyme
 
-# %%
 # equation with a advection_velocity of `1`.
 advection_velocity = 1.0
 equations = LinearScalarAdvectionEquation1D(advection_velocity)
@@ -37,5 +36,5 @@ include("ad_functions.jl")
 
 # %%
 
-@time J2 = gradients_ad_forward_enzyme_cache(semi);
-J1 == J2
+J2 = gradients_ad_forward_enzyme_cache(semi);
+J3 = gradients_ad_forward_enzyme_cache(semi);
