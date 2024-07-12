@@ -63,9 +63,10 @@ function gradients_ad_reverse_enzyme_cache(semi)
 
     for i in 1:length(du_ode)
         dy[i] = 1.0
-        Enzyme.autodiff(Reverse, inner_func, Duplicated(du_ode, dy), Duplicated(u_ode, dx), Active(cache)) # ok!
+        Enzyme.autodiff(Reverse, inner_func, Duplicated(du_ode, dy), Duplicated(u_ode, dx), Duplicated(semi.cache, cache_zero)) # ok!
         # Enzyme.autodiff(Reverse, inner_func, DuplicatedNoNeed, Duplicated(du_ode, dy), Duplicated(u_ode, dx), Duplicated(semi.cache, cache_zero)) # ok!
-        dxs[i, :] = dy
+        dxs[i, :] .= dx
+        dy[i] = 0.0
         dx .= 0.0
     end
 

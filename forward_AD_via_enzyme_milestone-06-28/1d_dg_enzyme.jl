@@ -37,4 +37,4 @@ include("ad_functions.jl")
 # %%
 
 J2 = gradients_ad_forward_enzyme_cache(semi);
-J3 = gradients_ad_forward_enzyme_cache(semi);
+J3 = gradients_ad_reverse_enzyme_cache(semi);
